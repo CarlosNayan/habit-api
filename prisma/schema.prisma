@@ -14,4 +14,35 @@ model habits {
   id_habit   String   @id @default(uuid())
   title      String
   created_at DateTime
+
+  habit_week_days habit_week_days[]
+  completed_habit completed_habit[]
+}
+
+model habit_week_days {
+  id_habit_week_days String @id @default(uuid())
+  id_habit           String
+  week_day           Int
+
+  habits habits @relation(fields: [id_habit], references: [id_habit])
+
+  @@unique([id_habit, week_day])
+}
+
+model day_habit {
+  id_day_habit String   @id @default(uuid())
+  date         DateTime
+
+  completed_habit completed_habit[]
+}
+
+model completed_habit {
+  id_completed_habit String @id @default(uuid())
+  id_habit           String
+  id_day_habit       String
+
+  habits    habits    @relation(fields: [id_habit], references: [id_habit])
+  day_habit day_habit @relation(fields: [id_day_habit], references: [id_day_habit])
+
+  @@unique([id_habit, id_day_habit])
 }
