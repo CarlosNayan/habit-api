@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { Repository } from "./repository";
+import dayjs from "dayjs";
 
 const repository = new Repository();
 
@@ -11,6 +12,7 @@ export class Controller {
 
       res.status(200).send(habits);
     } catch (error) {
+      console.error(error);
       throw new Error(error as string);
     }
   }
@@ -27,6 +29,7 @@ export class Controller {
 
       res.status(200).send(specificDay);
     } catch (error) {
+      console.error(error);
       throw new Error(error as string);
     }
   }
@@ -44,6 +47,50 @@ export class Controller {
 
       res.send(200);
     } catch (error) {
+      console.error(error);
+      throw new Error(error as string);
+    }
+  }
+
+  async toogleHabit(req: FastifyRequest, res: FastifyReply) {
+    const toogleHabitParamsVerify = z.object({
+      id_habit: z.string().uuid(),
+    });
+
+    const { id_habit } = toogleHabitParamsVerify.parse(req.params);
+    const today = dayjs().startOf("day").toDate();
+
+    try {
+      let day = await repository.findDayHabit(today);
+
+      if (!day) {
+        day = await repository.createDayHabit(today);
+      }
+
+      const findCompleteHabitTodayById =
+        await repository.findCompleteHabitTodayById(id_habit, day.id_day_habit);
+
+      if (findCompleteHabitTodayById) {
+        await repository.removeCompletedHabitToday(
+          findCompleteHabitTodayById.id_completed_habit
+        );
+        res.status(200).send("Removed successfully");
+      } else {
+        await repository.completeHabitToday(id_habit, day.id_day_habit);
+        res.status(201).send("Completed successfully");
+      }
+    } catch (error) {
+      console.error(error);
+      throw new Error(error as string);
+    }
+  }
+
+  async summary(req: FastifyRequest, res: FastifyReply) {
+    try {
+      const summary = await repository.summary();
+      res.status(200).send(summary);
+    } catch (error) {
+      console.error(error);
       throw new Error(error as string);
     }
   }

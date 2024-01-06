@@ -57,4 +57,76 @@ export class Repository {
       },
     });
   }
+
+  async findDayHabit(date: Date) {
+    return await prisma.day_habit.findFirst({
+      where: {
+        date: date,
+      },
+    });
+  }
+
+  async createDayHabit(date: Date) {
+    return await prisma.day_habit.create({
+      data: {
+        date,
+      },
+    });
+  }
+
+  async findCompleteHabitTodayById(id_habit: string, id_day_habit: string) {
+    return await prisma.completed_habit.findFirst({
+      where: {
+        id_habit,
+        id_day_habit,
+      },
+    });
+  }
+
+  async completeHabitToday(id_habit: string, id_day_habit: string) {
+    await prisma.completed_habit.create({
+      data: {
+        id_habit,
+        id_day_habit,
+      },
+    });
+  }
+
+  async removeCompletedHabitToday(id_completed_habit: string) {
+    await prisma.completed_habit.delete({
+      where: {
+        id_completed_habit,
+      },
+    });
+  }
+
+  async summary() {
+    return await prisma.$queryRaw`
+      SELECT 
+        DH.id_day_habit, 
+        DH.date,
+        (
+          SELECT 
+            cast(count(*) as float)
+          
+          FROM completed_habit CH
+
+          WHERE CH.id_day_habit = DH.id_day_habit
+        ) as completed,
+        (
+          SELECT 
+            cast(count(*) as float)
+          
+          FROM habit_week_days HWD
+
+          JOIN habits H
+            ON H.id_habit = HWD.id_habit
+
+          WHERE
+            HWD.week_day = cast(strftime('%w', DH.date/1000.0, 'unixepoch') as int)
+            AND H.created_at <= DH.date
+        ) as amount
+      FROM day_habit DH
+      `;
+  }
 }
