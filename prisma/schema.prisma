@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model habits {
-  id_habit   String   @id @default(uuid())
+  id_habit   Int      @id @default(autoincrement())
   title      String
   created_at DateTime
 
@@ -20,8 +20,8 @@ model habits {
 }
 
 model habit_week_days {
-  id_habit_week_days String @id @default(uuid())
-  id_habit           String
+  id_habit_week_days Int @id @default(autoincrement())
+  id_habit           Int
   week_day           Int
 
   habits habits @relation(fields: [id_habit], references: [id_habit])
@@ -30,16 +30,16 @@ model habit_week_days {
 }
 
 model day_habit {
-  id_day_habit String   @id @default(uuid())
+  id_day_habit Int      @id @default(autoincrement())
   date         DateTime
 
   completed_habit completed_habit[]
 }
 
 model completed_habit {
-  id_completed_habit String @id @default(uuid())
-  id_habit           String
-  id_day_habit       String
+  id_completed_habit Int @id @default(autoincrement())
+  id_habit           Int
+  id_day_habit       Int
 
   habits    habits    @relation(fields: [id_habit], references: [id_habit])
   day_habit day_habit @relation(fields: [id_day_habit], references: [id_day_habit])

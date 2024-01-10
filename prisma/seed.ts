@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const firstHabitId = "0730ffac-d039-4194-9571-01aa2aa0efbd";
+const firstHabitId = 1;
 const firstHabitCreationDate = new Date("2023-12-23T03:00:00.000");
 
-const secondHabitId = "00880d75-a933-4fef-94ab-e05744435297";
+const secondHabitId = 2;
 const secondHabitCreationDate = new Date("2023-12-25T03:00:00.000");
 
-const thirdHabitId = "fa1a1bcf-3d87-4626-8c0d-d7fd1255ac00";
+const thirdHabitId = 3;
 const thirdHabitCreationDate = new Date("2023-12-31T03:00:00.000");
 
 async function main() {
@@ -18,7 +18,6 @@ async function main() {
   await Promise.all([
     prisma.habits.create({
       data: {
-        id_habit: firstHabitId,
         title: "Beber 2L água",
         created_at: firstHabitCreationDate,
         habit_week_days: {
@@ -29,7 +28,6 @@ async function main() {
 
     prisma.habits.create({
       data: {
-        id_habit: secondHabitId,
         title: "Me exercitar",
         created_at: secondHabitCreationDate,
         habit_week_days: {
@@ -40,7 +38,6 @@ async function main() {
 
     prisma.habits.create({
       data: {
-        id_habit: thirdHabitId,
         title: "Dormir 8h",
         created_at: thirdHabitCreationDate,
         habit_week_days: {

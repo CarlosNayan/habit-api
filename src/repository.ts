@@ -74,7 +74,7 @@ export class Repository {
     });
   }
 
-  async findCompleteHabitTodayById(id_habit: string, id_day_habit: string) {
+  async findCompleteHabitTodayById(id_habit: number, id_day_habit: number) {
     return await prisma.completed_habit.findFirst({
       where: {
         id_habit,
@@ -83,7 +83,7 @@ export class Repository {
     });
   }
 
-  async completeHabitToday(id_habit: string, id_day_habit: string) {
+  async completeHabitToday(id_habit: number, id_day_habit: number) {
     await prisma.completed_habit.create({
       data: {
         id_habit,
@@ -92,7 +92,7 @@ export class Repository {
     });
   }
 
-  async removeCompletedHabitToday(id_completed_habit: string) {
+  async removeCompletedHabitToday(id_completed_habit: number) {
     await prisma.completed_habit.delete({
       where: {
         id_completed_habit,
@@ -107,7 +107,7 @@ export class Repository {
         DH.date,
         (
           SELECT 
-            cast(count(*) as float)
+          cast(count(*) as float)
           
           FROM completed_habit CH
 
@@ -115,7 +115,7 @@ export class Repository {
         ) as completed,
         (
           SELECT 
-            cast(count(*) as float)
+          cast(count(*) as float)
           
           FROM habit_week_days HWD
 
@@ -123,7 +123,7 @@ export class Repository {
             ON H.id_habit = HWD.id_habit
 
           WHERE
-            HWD.week_day = cast(strftime('%w', DH.date/1000.0, 'unixepoch') as int)
+            HWD.week_day = EXTRACT(DOW FROM DH.date)
             AND H.created_at <= DH.date
         ) as amount
       FROM day_habit DH

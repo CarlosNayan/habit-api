@@ -54,7 +54,7 @@ export class Controller {
 
   async toogleHabit(req: FastifyRequest, res: FastifyReply) {
     const toogleHabitParamsVerify = z.object({
-      id_habit: z.string().uuid(),
+      id_habit: z.coerce.number(),
     });
 
     const { id_habit } = toogleHabitParamsVerify.parse(req.params);
